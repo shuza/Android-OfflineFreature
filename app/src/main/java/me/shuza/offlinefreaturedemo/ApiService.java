@@ -13,6 +13,6 @@ import retrofit2.http.POST;
  **/
 
 public interface ApiService {
-    @POST("dummy_response.php")
+    @POST("5a25878e2e0000392aa90676")
     Observable<ResponsePojo> getDataFromAPI();
 }

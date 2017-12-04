@@ -1,6 +1,8 @@
 package me.shuza.offlinefreaturedemo;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -29,26 +31,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
  **/
 
 public class NetworkManager {
-    public static String BASE_URL = "http://shuza.me/tmp_file/";
+    public static String BASE_URL = "http://www.mocky.io/v2/";
 
-    public static Retrofit getRetrofit(Context context) {
-        File httpCacheFile = new File(context.getCacheDir(), "demoHttpCache");
-        Cache cache = new Cache(httpCacheFile, 10 * 1024 * 1024);
+    public static Retrofit getRetrofit() {
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .cache(cache)
                 .addInterceptor(chain -> {
-                    try {
-                        LogUtil.printLogMessage("online request", "try to get response from server");
-                        return chain.proceed(chain.request());
-                    } catch (Exception e) {
-                        Request offlineRequest = chain.request().newBuilder()
-                                .header("Cache-Control", "public, only-if-cached, "
-                                        + "max-stale=" + 60 * 60 * 24)
-                                .build();
-                        LogUtil.printLogMessage("offline request", "get response from cache");
-                        return chain.proceed(offlineRequest);
-                    }
+                    LogUtil.printLogMessage("URL", chain.request().url().toString());
+                    return chain.proceed(chain.request());
                 })
                 .build();
         Retrofit retrofit = new Retrofit.Builder()
@@ -58,6 +48,11 @@ public class NetworkManager {
                 .baseUrl(BASE_URL)
                 .build();
         return retrofit;
+    }
 
+    public static boolean isInternetAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null;
     }
 }
