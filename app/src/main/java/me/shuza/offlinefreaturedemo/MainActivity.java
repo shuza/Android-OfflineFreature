@@ -1,37 +1,23 @@
 package me.shuza.offlinefreaturedemo;
 
 import android.app.ProgressDialog;
+import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import me.shuza.offlinefreaturedemo.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
-    @BindView(R.id.tvName)
-    TextView tvName;
-
-    @BindView(R.id.tvEmail)
-    TextView tvEmail;
-
-    @BindView(R.id.tvBlog)
-    TextView tvBlog;
-
-    @BindView(R.id.btnLoad)
-    Button btnLoad;
 
     private final String END_POINT = "http://www.mocky.io/v2/5a25878e2e0000392aa90676";
     RealmDAO realmDAO;
 
+    private ActivityMainBinding binding;
     private ProgressDialog progressDialog;
     private Observer<ResponsePojo> subscriber;
 
@@ -39,7 +25,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+        binding.btnLoad.setOnClickListener((view -> {
+            progressDialog.show();
+            getDataFromAPI();
+        }));
 
         realmDAO = new RealmDAO(this);
         progressDialog = new ProgressDialog(this);
@@ -54,9 +45,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNext(ResponsePojo data) {
                 progressDialog.dismiss();
-                tvName.setText("Name : " + data.getName());
-                tvEmail.setText("Email : " + data.getEmail());
-                tvBlog.setText("Blog : " + data.getBlog());
+                binding.tvName.setText("Name : " + data.getName());
+                binding.tvEmail.setText("Email : " + data.getEmail());
+                binding.tvBlog.setText("Blog : " + data.getBlog());
                 realmDAO.saveResponse(data, END_POINT);
             }
 
@@ -65,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
                 LogUtil.printLogMessage("error response", t.getMessage());
 
                 progressDialog.dismiss();
-                tvName.setText("error :   " + t.getMessage());
-                tvEmail.setText("error");
-                tvBlog.setText("error");
+                binding.tvName.setText("error :   " + t.getMessage());
+                binding.tvEmail.setText("error");
+                binding.tvBlog.setText("error");
             }
 
             @Override
@@ -75,12 +66,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-    }
-
-    @OnClick(R.id.btnLoad)
-    public void showData(View view) {
-        progressDialog.show();
-        getDataFromAPI();
     }
 
 

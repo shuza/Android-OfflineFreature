@@ -21,6 +21,11 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+
+    dataBinding {
+        enabled = true
+    }
+
 }
 
 ext {
@@ -35,10 +40,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.android.support:recyclerview-v7:26.1.0'
-
-    // butter knife
-    compile 'com.jakewharton:butterknife:8.8.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
     // RxJava
     compile 'io.reactivex.rxjava2:rxjava:2.1.0'
